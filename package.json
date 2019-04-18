@@ -1,0 +1,30 @@
+{
+  "name": "recreation.gov",
+  "version": "1.0.0",
+  "description": "monitor the campsites on recreation.gov and notify you with telegram",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "standard --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heqian/recreation.gov.git"
+  },
+  "author": "Qian He",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/heqian/recreation.gov/issues"
+  },
+  "homepage": "https://github.com/heqian/recreation.gov#readme",
+  "devDependencies": {
+    "standard": "*"
+  },
+  "dependencies": {
+    "dotenv": "*",
+    "lodash": "*",
+    "moment": "*",
+    "node-fetch": "*",
+    "node-schedule": "*"
+  }
+}
