@@ -7,11 +7,12 @@ const Telegram = require('./telegram')
 
 const telegram = new Telegram(process.env.TELEGRAM_BOT_TOKEN, process.env.TELEGRAM_CHAT_ID)
 const campground = new Campground(process.env.CAMPGROUND_ID)
-const months = process.env.CAMPGROUND_MONTHS ? process.env.CAMPGROUND_MONTHS.split(',') : []
 const campsites = process.env.CAMPSITES ? process.env.CAMPSITES.split(',') : []
+const months = process.env.MONTHS ? process.env.MONTHS.split(',') : []
+const days = process.env.DAYS_OF_WEEK ? process.env.DAYS_OF_WEEK.split(',') : []
 
 // Every Minute
-Schedule.scheduleJob('*/5 * * * *', async date => {
+Schedule.scheduleJob('*/15 * * * *', async date => {
   console.info(date)
 
   months.forEach(async month => {
@@ -31,9 +32,19 @@ Schedule.scheduleJob('*/5 * * * *', async date => {
               return
             }
           }
+
+          if (days.length) {
+            let day = new Date(date).getUTCDay()
+            if (!_.includes(days, day.toString())) {
+              return
+            }
+          }
+
           // Notify the user
           if (availability === 'Available') {
-            await telegram.message(`${campsite.loop} - ${campsite.site}: ${new Date(date)}. https://www.recreation.gov/camping/campgrounds/${campground.id}/availability`)
+            let message = `${campsite.loop} - ${campsite.site}: ${new Date(date)}. https://www.recreation.gov/camping/campgrounds/${campground.id}/availability`
+            await telegram.message(message)
+            console.info('Sent:', message)
           }
         })
       })
