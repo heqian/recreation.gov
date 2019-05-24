@@ -4,12 +4,16 @@ const _ = require('lodash')
 const Schedule = require('node-schedule')
 const Campground = require('./campground')
 const Telegram = require('./telegram')
+const IFTTT = require('./ifttt')
 
-const telegram = new Telegram(process.env.TELEGRAM_BOT_TOKEN, process.env.TELEGRAM_CHAT_ID)
 const campground = new Campground(process.env.CAMPGROUND_ID)
-const campsites = process.env.CAMPSITES ? process.env.CAMPSITES.split(',') : []
-const months = process.env.MONTHS ? process.env.MONTHS.split(',') : []
-const days = process.env.DAYS_OF_WEEK ? process.env.DAYS_OF_WEEK.split(',') : []
+const campsites = _.isEmpty(process.env.CAMPSITES) ? [] : process.env.CAMPSITES.split(',')
+const months = _.isEmpty(process.env.MONTHS) ? [] : process.env.MONTHS.split(',')
+const days = _.isEmpty(process.env.DAYS_OF_WEEK) ? [] : process.env.DAYS_OF_WEEK.split(',')
+let iftttKeys = _.isEmpty(process.env.IFTTT_KEYS) ? [] : process.env.IFTTT_KEYS.split(',')
+
+const telegram = new Telegram()
+const ifttt = new IFTTT()
 
 // Every Minute
 Schedule.scheduleJob('*/15 * * * *', async date => {
@@ -17,11 +21,6 @@ Schedule.scheduleJob('*/15 * * * *', async date => {
 
   months.forEach(async month => {
     let data = await campground.getData(month)
-
-    // The user is on call
-    if (data === null) {
-      await telegram.message(`Month: ${month}`)
-    }
 
     if (data.campsites) {
       _.each(data.campsites, (campsite, campsiteId) => {
@@ -42,9 +41,25 @@ Schedule.scheduleJob('*/15 * * * *', async date => {
 
           // Notify the user
           if (availability === 'Available') {
-            let message = `${campsite.loop} - ${campsite.site}: ${new Date(date)}. https://www.recreation.gov/camping/campgrounds/${campground.id}/availability`
-            await telegram.message(message)
-            console.info('Sent:', message)
+            console.info(date, availability)
+
+            if (!_.isEmpty(process.env.TELEGRAM_BOT_TOKEN) && !_.isEmpty(process.env.TELEGRAM_CHAT_ID)) {
+              telegram.message(
+                `${campsite.loop} - ${campsite.site}: ${new Date(date)}. https://www.recreation.gov/camping/campgrounds/${campground.id}/availability`,
+                process.env.TELEGRAM_BOT_TOKEN,
+                process.env.TELEGRAM_CHAT_ID
+              )
+            }
+
+            _.each(iftttKeys, async key => {
+              ifttt.webhook(
+                process.env.IFTTT_EVENT,
+                new Date(date).toString(),
+                `${campsite.loop} - ${campsite.site}`,
+                `https://www.recreation.gov/camping/campgrounds/${campground.id}/availability`,
+                key
+              )
+            })
           }
         })
       })

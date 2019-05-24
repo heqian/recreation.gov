@@ -1,20 +1,20 @@
 const fetch = require('node-fetch')
 
-class Telegram {
-  constructor (token, id) {
-    this.token = token
-    this.id = id
+class IFTTT {
+  constructor (key) {
+    this.key = key
   }
 
-  message (content, token = this.token, id = this.id) {
-    return fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+  webhook (event, value1, value2, value3, key = this.key) {
+    return fetch(`https://maker.ifttt.com/trigger/${event}/with/key/${key}`, {
       method: 'POST',
       headers: {
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        chat_id: id,
-        text: content
+        value1: value1,
+        value2: value2,
+        value3: value3
       })
     }).then(response => {
       if (response.headers.get('content-type').includes('application/json')) {
@@ -28,4 +28,4 @@ class Telegram {
   }
 }
 
-module.exports = Telegram
+module.exports = IFTTT
