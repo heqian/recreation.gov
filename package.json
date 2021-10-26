@@ -24,7 +24,7 @@
     "dotenv": "*",
     "lodash": "*",
     "moment": "*",
-    "node-fetch": "*",
+    "node-fetch": "2.6.5",
     "node-schedule": "*"
   }
 }

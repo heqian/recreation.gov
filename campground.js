@@ -1,4 +1,3 @@
-const querystring = require('querystring')
 const fetch = require('node-fetch')
 const moment = require('moment')
 
@@ -8,11 +7,11 @@ class Campground {
   }
 
   getData (date) {
-    let query = {
-      'start_date': moment.utc(date).toISOString()
-    }
+    const query = new URLSearchParams({
+      start_date: moment.utc(date).toISOString()
+    })
 
-    let apiUrl = `https://www.recreation.gov/api/camps/availability/campground/${this.id}/month?${querystring.stringify(query)}`
+    const apiUrl = `https://www.recreation.gov/api/camps/availability/campground/${this.id}/month?${query.toString()}`
 
     return fetch(apiUrl, {
       method: 'GET'

@@ -10,18 +10,17 @@ const campground = new Campground(process.env.CAMPGROUND_ID)
 const campsites = _.isEmpty(process.env.CAMPSITES) ? [] : process.env.CAMPSITES.split(',')
 const months = _.isEmpty(process.env.MONTHS) ? [] : process.env.MONTHS.split(',')
 const days = _.isEmpty(process.env.DAYS_OF_WEEK) ? [] : process.env.DAYS_OF_WEEK.split(',')
-let iftttKeys = _.isEmpty(process.env.IFTTT_KEYS) ? [] : process.env.IFTTT_KEYS.split(',')
+const iftttKeys = _.isEmpty(process.env.IFTTT_KEYS) ? [] : process.env.IFTTT_KEYS.split(',')
 
 const telegram = new Telegram()
 const ifttt = new IFTTT()
 
-// Every Minute
+// Cron
 Schedule.scheduleJob('*/15 * * * *', async date => {
   console.info(date)
 
   months.forEach(async month => {
-    let data = await campground.getData(month)
-
+    const data = await campground.getData(month)
     if (data.campsites) {
       _.each(data.campsites, (campsite, campsiteId) => {
         _.each(campsite.availabilities, async (availability, date) => {
@@ -33,7 +32,7 @@ Schedule.scheduleJob('*/15 * * * *', async date => {
           }
 
           if (days.length) {
-            let day = new Date(date).getUTCDay()
+            const day = new Date(date).getUTCDay()
             if (!_.includes(days, day.toString())) {
               return
             }
