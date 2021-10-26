@@ -44,7 +44,7 @@ Schedule.scheduleJob('*/15 * * * *', async date => {
 
             if (!_.isEmpty(process.env.TELEGRAM_BOT_TOKEN) && !_.isEmpty(process.env.TELEGRAM_CHAT_ID)) {
               telegram.message(
-                `${campsite.loop} - ${campsite.site}: ${new Date(date)}. https://www.recreation.gov/camping/campgrounds/${campground.id}/availability`,
+                `${campsite.loop} - ${campsite.site}: ${new Date(date).toUTCString().substr(0, 16)}. https://www.recreation.gov/camping/campgrounds/${campground.id}/availability`,
                 process.env.TELEGRAM_BOT_TOKEN,
                 process.env.TELEGRAM_CHAT_ID
               )
