@@ -12,9 +12,9 @@ class IFTTT {
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        value1: value1,
-        value2: value2,
-        value3: value3
+        value1,
+        value2,
+        value3
       })
     }).then(response => {
       if (response.headers.get('content-type').includes('application/json')) {

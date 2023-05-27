@@ -40,7 +40,7 @@ Schedule.scheduleJob('*/15 * * * *', async date => {
 
           // Notify the user
           if (availability === 'Available') {
-            console.info(date, availability)
+            console.info(date, campsite.site, availability)
 
             if (!_.isEmpty(process.env.TELEGRAM_BOT_TOKEN) && !_.isEmpty(process.env.TELEGRAM_CHAT_ID)) {
               telegram.message(
